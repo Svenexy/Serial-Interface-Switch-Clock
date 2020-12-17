@@ -51,7 +51,7 @@ namespace SerialInterfaceClock
 
                 /* Get serialports from system, get portname and device name and add them to tList */
                 var Ports = searcher.Get().Cast<ManagementBaseObject>().ToList();
-                var tList = (from n in PortNames join p in Ports on n equals p["DeviceID"].ToString() select n).ToList();
+                var tList = (from n in PortNames join p in Ports on n equals p["DeviceID"].ToString() select n + " - " + p["Description"]).ToList();
 
                 if (PortNames != null || PortNames.Length != 0)
                 {

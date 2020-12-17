@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SerialInterfaceClock"
         mc:Ignorable="d"
-        Title="Serial Interface Clock" Height="720" Width="1280">
+        Title="Serial Interface Switch Clock" Height="720" Width="1280">
     <Grid Margin="0,0,0,0">
-        <ComboBox x:Name="CbSerialPort" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="200"/>
-        <Button x:Name="BtConnect" Content="Connect" HorizontalAlignment="Left" Margin="215,10,0,0" VerticalAlignment="Top" Width="82" Click="Bt_Connect_Click" Height="22"/>
+        <ComboBox x:Name="CbSerialPort" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="294"/>
+        <Button x:Name="BtConnect" Content="Connect" HorizontalAlignment="Left" Margin="309,10,0,0" VerticalAlignment="Top" Width="82" Click="Bt_Connect_Click" Height="22"/>
         <ComboBox x:Name="Cb_Baudrate" HorizontalAlignment="Left" Margin="74,623,0,0" VerticalAlignment="Top" Width="120">
             <ComboBoxItem Content="300"></ComboBoxItem>
             <ComboBoxItem Content="1200"></ComboBoxItem>
@@ -22,12 +22,12 @@
             <ComboBoxItem Content="115200"></ComboBoxItem>
         </ComboBox>
         <Label Content="Baudrate" HorizontalAlignment="Left" Margin="12,621,0,0" VerticalAlignment="Top"/>
-        <Grid HorizontalAlignment="Left" Height="606" Margin="302,10,0,0" VerticalAlignment="Top" Width="968">
-            <Label x:Name="Lb_Time" Content="20:25:34" HorizontalAlignment="Left" Margin="828,0,0,0" VerticalAlignment="Top" Width="130" FontStyle="Normal" FontSize="20" FontWeight="Bold"/>
-            <Label x:Name="Lb_Date" Content="17-12-2020" HorizontalAlignment="Left" Margin="828,37,0,0" VerticalAlignment="Top" Width="130" FontSize="20" FontWeight="Bold"/>
-            <ListBox HorizontalAlignment="Center" Height="150" Margin="0,456,0,0" VerticalAlignment="Top" Width="968" BorderBrush="Black"/>
+        <Grid HorizontalAlignment="Left" Height="606" Margin="396,10,0,0" VerticalAlignment="Top" Width="874">
+            <Label x:Name="Lb_Time" Content="20:25:34" HorizontalAlignment="Left" Margin="734,0,0,0" VerticalAlignment="Top" Width="130" FontStyle="Normal" FontSize="20" FontWeight="Bold"/>
+            <Label x:Name="Lb_Date" Content="17-12-2020" HorizontalAlignment="Left" Margin="734,37,0,0" VerticalAlignment="Top" Width="130" FontSize="20" FontWeight="Bold"/>
+            <ListBox HorizontalAlignment="Center" Height="150" Margin="0,456,0,0" VerticalAlignment="Top" Width="854" BorderBrush="Black"/>
         </Grid>
-        <ListBox x:Name="Lb_Recieved" HorizontalAlignment="Left" Height="579" Margin="12,37,0,0" VerticalAlignment="Top" Width="285" BorderBrush="Black"/>
+        <ListBox x:Name="Lb_Recieved" HorizontalAlignment="Left" Height="579" Margin="12,37,0,0" VerticalAlignment="Top" Width="379" BorderBrush="Black"/>
 
     </Grid>
 </Window>
