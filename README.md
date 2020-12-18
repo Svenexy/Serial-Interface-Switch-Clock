@@ -1,2 +1,2 @@
-# Serial-Interface-Switch-Clock
+# Serial Interface Switch Clock
 Embedded Control Switch Clock Project
