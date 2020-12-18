@@ -28,6 +28,8 @@ namespace SerialInterfaceClock
         ComboBoxSerial comboboxserial;
         SerialPort serialPort;
 
+        private byte btnstate = 0;
+
 
         public MainWindow()
         {
@@ -35,34 +37,65 @@ namespace SerialInterfaceClock
 
             comboboxserial = new ComboBoxSerial();
             serialPort = new SerialPort();
-            
+
             comboboxserial.GetPortsAddToComboBox(CbSerialPort);
-            
-            
+
+
             startclock();
 
 
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnstate == 0)
+            {
+                SerialPortDataSend("1");
+                btnstate = 1;
+                btn1.Background = Brushes.Green;
+            }
+            else
+            {
+                SerialPortDataSend("2");
+                btnstate = 0;
+                btn1.Background = Brushes.Red;
+            }
+        }
+
         private void Bt_Connect_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (!serialPort.IsOpen)
             {
-                serialPort.PortName = CbSerialPort.Text;
-                serialPort.BaudRate = Convert.ToInt32(Cb_Baudrate.Text);
-                serialPort.DataBits = 8;
-                serialPort.Parity = Parity.None;
-                serialPort.Handshake = Handshake.None;
-                serialPort.StopBits = StopBits.One;
-                serialPort.DataReceived += SerialPortDataRecieved;
-                serialPort.Open();
-                Debug.WriteLine($"Connected to {CbSerialPort.Text} on baudrate {Cb_Baudrate.Text}");
+                try
+                {
+                    serialPort.PortName = CbSerialPort.Text;
+                    serialPort.BaudRate = Convert.ToInt32(Cb_Baudrate.Text);
+                    serialPort.DataBits = 8;
+                    serialPort.Parity = Parity.None;
+                    serialPort.Handshake = Handshake.None;
+                    serialPort.StopBits = StopBits.One;
+                    serialPort.DataReceived += SerialPortDataRecieved;
+                    serialPort.Open();
+                    Debug.WriteLine($"Connected to {CbSerialPort.Text} on baudrate {Cb_Baudrate.Text}");
+                    Bt_Connect.Content = "Disconnect";
+                    Lb_Connecting.Content = "Connected";
+                    Lb_Connecting.Foreground = Brushes.Green;
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+                    PrintError("No Port selected");
+                }
             }
-
-            catch (Exception error)
+            else
             {
-                MessageBox.Show(error.Message, error.Source  ,MessageBoxButton.OK, MessageBoxImage.Error);
+                serialPort.Close();
+                Debug.WriteLine($"Disconnected from {CbSerialPort.Text}");
+                Bt_Connect.Content = "Connect";
+                Lb_Connecting.Content = "Disconnected";
+                Lb_Connecting.Foreground = Brushes.Red;
             }
+            
         }
 
         private void SerialPortDataRecieved(object sender, SerialDataReceivedEventArgs e)
@@ -70,18 +103,53 @@ namespace SerialInterfaceClock
 
             int dataLength = serialPort.BytesToRead;
             byte[] dataRecieved = new byte[dataLength];
-            Debug.WriteLine(dataRecieved);
             int nBytes = serialPort.Read(dataRecieved, 0, dataLength);
             if (nBytes == 0) return;
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)} {Environment.NewLine}");
+                Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
+                Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
             }));
 
-            
-            
+
+
             //throw new NotImplementedException();
+        }
+
+
+        private void SerialPortDataSend(string data)
+        {            
+            try
+            {
+                serialPort.Write(data);
+
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    Debug.WriteLine($"==> {data}");
+                    Lb_Send.Items.Add($"==> {data}");
+                }));
+
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
+        }
+
+
+        private void PrintError (string error)
+        {
+            if(error == "")
+            {
+                lb_Error.Content = "";
+            }
+            else
+            {
+                lb_Error.Content = $"Error: {error}";
+            }
+            
         }
 
 

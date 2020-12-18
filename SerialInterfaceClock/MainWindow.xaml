@@ -5,29 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SerialInterfaceClock"
         mc:Ignorable="d"
-        Title="Serial Interface Switch Clock" Height="720" Width="1280">
-    <Grid Margin="0,0,0,0">
-        <ComboBox x:Name="CbSerialPort" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="294"/>
-        <Button x:Name="BtConnect" Content="Connect" HorizontalAlignment="Left" Margin="309,10,0,0" VerticalAlignment="Top" Width="82" Click="Bt_Connect_Click" Height="22"/>
-        <ComboBox x:Name="Cb_Baudrate" HorizontalAlignment="Left" Margin="74,623,0,0" VerticalAlignment="Top" Width="120">
-            <ComboBoxItem Content="300"></ComboBoxItem>
-            <ComboBoxItem Content="1200"></ComboBoxItem>
-            <ComboBoxItem Content="2400"></ComboBoxItem>
-            <ComboBoxItem Content="4800"></ComboBoxItem>
-            <ComboBoxItem Content="9600"></ComboBoxItem>
-            <ComboBoxItem Content="19200" IsSelected="True"></ComboBoxItem>
-            <ComboBoxItem Content="38400"></ComboBoxItem>
-            <ComboBoxItem Content="57600"></ComboBoxItem>
-            <ComboBoxItem Content="74880"></ComboBoxItem>
-            <ComboBoxItem Content="115200"></ComboBoxItem>
-        </ComboBox>
-        <Label Content="Baudrate" HorizontalAlignment="Left" Margin="12,621,0,0" VerticalAlignment="Top"/>
-        <Grid HorizontalAlignment="Left" Height="606" Margin="396,10,0,0" VerticalAlignment="Top" Width="874">
-            <Label x:Name="Lb_Time" Content="20:25:34" HorizontalAlignment="Left" Margin="734,0,0,0" VerticalAlignment="Top" Width="130" FontStyle="Normal" FontSize="20" FontWeight="Bold"/>
-            <Label x:Name="Lb_Date" Content="17-12-2020" HorizontalAlignment="Left" Margin="734,37,0,0" VerticalAlignment="Top" Width="130" FontSize="20" FontWeight="Bold"/>
-            <ListBox HorizontalAlignment="Center" Height="150" Margin="0,456,0,0" VerticalAlignment="Top" Width="854" BorderBrush="Black"/>
+        Title="Serial Interface Switch Clock" Height="720" Width="1280" Background="#FF343434">
+    <Grid x:Name="btn" ShowGridLines="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="42"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1" ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="4*"/>
+            </Grid.RowDefinitions>
+            <ListBox x:Name="Lb_Send" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White"/>
+            <Label Grid.Row="0" x:Name="Lb_Time" Content="20:25:34" Margin="0,10,10,0" VerticalAlignment="Top" FontStyle="Normal" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right" Width="130"/>
+            <Label Grid.Row="0" x:Name="Lb_Date" Content="17-12-2020" Margin="0,47,10,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right" Width="130" Height="36" VerticalAlignment="Top"/>
+            <Rectangle HorizontalAlignment="Left" Width="25" Margin="10,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
+            <Rectangle HorizontalAlignment="Left" Width="25" Margin="50,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
+            <Rectangle HorizontalAlignment="Left" Width="25" Margin="90,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
+            <Rectangle HorizontalAlignment="Left" Width="25" Margin="130,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
+
         </Grid>
-        <ListBox x:Name="Lb_Recieved" HorizontalAlignment="Left" Height="579" Margin="12,37,0,0" VerticalAlignment="Top" Width="379" BorderBrush="Black"/>
+        <Grid ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid ShowGridLines="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="110"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Bt_Connect" Content="Connect" Margin="10,0,10,0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="22" Width="Auto" Click="Bt_Connect_Click" Background="#FF646464" Foreground="White"/>
+                <ComboBox x:Name="CbSerialPort" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="Auto"/>
+            </Grid>
+            <ListBox x:Name="Lb_Recieved" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White"/>
+        </Grid>
+        <Grid Grid.Row="1" ShowGridLines="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="Cb_Baudrate" Margin="10,0,10,0" VerticalAlignment="Center" Width="Auto" Height="22">
+                <ComboBoxItem Content="300"></ComboBoxItem>
+                <ComboBoxItem Content="1200"></ComboBoxItem>
+                <ComboBoxItem Content="2400"></ComboBoxItem>
+                <ComboBoxItem Content="4800"></ComboBoxItem>
+                <ComboBoxItem Content="9600"></ComboBoxItem>
+                <ComboBoxItem Content="19200" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="38400"></ComboBoxItem>
+                <ComboBoxItem Content="57600"></ComboBoxItem>
+                <ComboBoxItem Content="74880"></ComboBoxItem>
+                <ComboBoxItem Content="115200"></ComboBoxItem>
+            </ComboBox>
+            <Label x:Name="Lb_Connecting" Content="Disconnected" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" FontWeight="Bold" Background="Transparent" Foreground="Red" HorizontalAlignment="Stretch"/>
+        </Grid>
+        <Label x:Name="lb_Error" Content="" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0,10,0" Grid.Row="1" VerticalAlignment="Center" Foreground="Red" FontWeight="Bold"/>
+        <Button x:Name="btn1" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="359,198,0,0" VerticalAlignment="Top" Click="Button_Click" Background="#FF646464" Foreground="White" Height="51" Width="89" Visibility="Hidden"/>
 
     </Grid>
 </Window>
