@@ -64,7 +64,7 @@
             <Label x:Name="Lb_Connecting" Content="Disconnected" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" FontWeight="Bold" Background="Transparent" Foreground="Red" HorizontalAlignment="Stretch"/>
         </Grid>
         <Label x:Name="lb_Error" Content="" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0,10,0" Grid.Row="1" VerticalAlignment="Center" Foreground="Red" FontWeight="Bold"/>
-        <Button x:Name="btn1" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="359,198,0,0" VerticalAlignment="Top" Click="Button_Click" Background="#FF646464" Foreground="White" Height="51" Width="89" Visibility="Hidden"/>
+        <Button x:Name="btn1" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="359,198,0,0" VerticalAlignment="Top" Click="Button_Click" Background="#FF646464" Foreground="White" Height="51" Width="89" Visibility="Visible"/>
 
     </Grid>
 </Window>
