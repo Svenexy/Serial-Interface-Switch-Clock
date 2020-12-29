@@ -64,11 +64,14 @@ namespace SerialInterfaceClock
 
         private void Bt_Connect_Click(object sender, RoutedEventArgs e)
         {
+
+            string comPoort = comboboxserial.GetSelectedCompoort(CbSerialPort.Text);
+
             if (!serialPort.IsOpen)
             {
                 try
                 {
-                    serialPort.PortName = CbSerialPort.Text.GetUntilOrEmpty();
+                    serialPort.PortName = comPoort;
                     serialPort.BaudRate = Convert.ToInt32(Cb_Baudrate.Text);
                     serialPort.DataBits = 8;
                     serialPort.Parity = Parity.None;
@@ -76,7 +79,7 @@ namespace SerialInterfaceClock
                     serialPort.StopBits = StopBits.One;
                     serialPort.DataReceived += SerialPortDataRecieved;
                     serialPort.Open();
-                    Debug.WriteLine($"Connected to {CbSerialPort.Text.GetUntilOrEmpty()} on baudrate {Cb_Baudrate.Text}");
+                    Debug.WriteLine($"Connected to {comPoort} on baudrate {Cb_Baudrate.Text}");
                     Bt_Connect.Content = "Disconnect";
                     Lb_Connecting.Content = "Connected";
                     Lb_Connecting.Foreground = Brushes.Green;
@@ -167,25 +170,6 @@ namespace SerialInterfaceClock
             //throw new NotImplementedException();
             Lb_Time.Content = DateTime.Now.ToString("HH:mm:ss");
             Lb_Date.Content = DateTime.Now.ToString("dd-MM-yyyy");
-        }
-    }
-
-
-    static class Helper
-    {
-        public static string GetUntilOrEmpty(this string text, string stopAt = "-")
-        {
-            if (!String.IsNullOrWhiteSpace(text))
-            {
-                int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
-
-                if (charLocation > 0)
-                {
-                    return text.Substring(0, charLocation).Trim();
-                }
-            }
-
-            return String.Empty;
         }
     }
 

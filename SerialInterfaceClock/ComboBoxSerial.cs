@@ -103,5 +103,20 @@ namespace SerialInterfaceClock
                 }
             }
         }
+
+        public string GetSelectedCompoort(string text, string stopAt = "-")
+        {
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
+
+                if (charLocation > 0)
+                {
+                    return text.Substring(0, charLocation).Trim();
+                }
+            }
+
+            return String.Empty;
+        }
     }
 }
