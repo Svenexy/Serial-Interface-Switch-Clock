@@ -39,6 +39,8 @@ namespace SerialInterfaceClock
 
         private byte btnstate = 0;
 
+        private bool[] ledstates = { false, false, false, false };
+
 
         public MainWindow()
         {
@@ -57,30 +59,20 @@ namespace SerialInterfaceClock
 
         }
 
-
-        private void setLedStatusTest(byte[] dataRecieved)
-        {
-            Debug.WriteLine($"HEELO");
-            if (dataRecieved[0] == 0x6c)
-            {
-                setLedStates(dataRecieved[1], dataRecieved[2], dataRecieved[3], dataRecieved[4]);
-            }
-        }
-
         // Test button
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (btnstate == 0)
             {
-                //SerialPortDataSend("1");
                 btnstate = 1;
                 btn1.Background = Brushes.Green;
+                setLedStates();
             }
             else
             {
-                //SerialPortDataSend("2");
                 btnstate = 0;
                 btn1.Background = Brushes.Red;
+                setLedStates();
 
             }
         }
@@ -139,7 +131,12 @@ namespace SerialInterfaceClock
 
             if (dataRecieved[0] == 0x6c)
             {
-                setLedStates(dataRecieved[1], dataRecieved[2], dataRecieved[3], dataRecieved[4]);
+
+                ledstates[0] = BitConverter.ToBoolean(dataRecieved, 1);
+                ledstates[1] = BitConverter.ToBoolean(dataRecieved, 2);
+                ledstates[2] = BitConverter.ToBoolean(dataRecieved, 3);
+                ledstates[3] = BitConverter.ToBoolean(dataRecieved, 4);
+                setLedStates();
             }
 
 
@@ -167,43 +164,43 @@ namespace SerialInterfaceClock
                 s += data[i].ToString() + ",";
             }
 
-            //try
-            //{
-            //    serialPort.Write(data, 0, data.Length);
+            try
+            {
+                serialPort.Write(data, 0, data.Length);
 
-            //    Application.Current.Dispatcher.Invoke(new Action(() =>
-            //    {
-            Debug.WriteLine($"==> {s}");
-            Lb_Send.Items.Add($"==> {s}");
-            //    }));
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    Debug.WriteLine($"==> {s}");
+                    Lb_Send.Items.Add($"==> {s}");
+                }));
 
-            //}
-            //catch (Exception error)
-            //{
-            //    MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
         }
 
 
-        private void setLedStates(byte a, byte b, byte c, byte d)
+        private void setLedStates()
         {
-            if (a == 0x01)
+            if (ledstates[0])
                 led_1.Fill = Brushes.Green;
             else
-                led_1.Fill = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            if (b == 0x01)
+                led_1.Fill = Brushes.Red;
+            if (ledstates[1])
                 led_2.Fill = Brushes.Green;
             else
-                led_2.Fill = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            if (c == 0x01)
+                led_2.Fill = Brushes.Red;
+            if (ledstates[2])
                 led_3.Fill = Brushes.Green;
             else
-                led_3.Fill = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-            if (d == 0x01)
+                led_3.Fill = Brushes.Red;
+            if (ledstates[3])
                 led_4.Fill = Brushes.Green;
             else
-                led_4.Fill = new SolidColorBrush(Color.FromRgb(100, 100, 100));
+                led_4.Fill = Brushes.Red;
         }
 
 
@@ -245,21 +242,19 @@ namespace SerialInterfaceClock
         {
             int led = int.Parse(cb_Led_Switch.Text);
             string time = tb_Switch_Time.Text;
-            byte on_off = byte.Parse(cb_OnOff.Text);
+            byte on_off = (byte)((bool.Parse(cb_OnOff.Text)) ? 0x01 : 0x00);
 
-            //List<string> timeList = new List<string>(time.Split(':'));
-            //List<byte> sendata = new List<byte>();
+            List<string> timeList = new List<string>(time.Split(':'));
+            List<byte> sendata = new List<byte>();
 
-            //sendata.Add(on_off);
+            sendata.Add(on_off);
 
-            //foreach (string i in timeList)
-            //{
-            //    sendata.Add(byte.Parse(i));
-            //}
+            foreach (string i in timeList)
+            {
+                sendata.Add(byte.Parse(i));
+            }
 
-
-
-            //createPacket('h', 1, sendata.ToArray());
+            createPacket('h', led, sendata.ToArray());
 
         }
 
@@ -270,37 +265,49 @@ namespace SerialInterfaceClock
             int time1 = int.Parse(tb_on_time.Text);
             int time2 = int.Parse(tb_off_time.Text);
 
-            var data = new byte[4] { 0, 0, 0, 0 };
+            List<byte> sendata = new List<byte>();
 
-            data[0] = (byte)(time1 & 0x00FF);
-            data[1] = (byte)((time1 & 0xFF00) >> 8);
-            data[2] = (byte)(time2 & 0x00FF);
-            data[3] = (byte)((time2 & 0xFF00) >> 8);
+            sendata.Add((byte)(time1 & 0x00FF));
+            sendata.Add((byte)((time1 & 0xFF00) >> 8));
+            sendata.Add((byte)(time2 & 0x00FF));
+            sendata.Add((byte)((time2 & 0xFF00) >> 8));
 
-            createPacket('i', led, data);
+            createPacket('i', led, sendata.ToArray());
 
 
         }
 
         private void ra_Led1_Clicked(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Led 1 Clicked");
+            List<byte> sendata = new List<byte>();
+            sendata.Add(Convert.ToByte(!ledstates[0]));
+            setLedStates();
+            createPacket('l', 1, sendata.ToArray());
 
         }
 
         private void ra_Led2_Clicked(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Led 2 Clicked");
+            List<byte> sendata = new List<byte>();
+            sendata.Add(Convert.ToByte(!ledstates[1]));
+            setLedStates();
+            createPacket('l', 2, sendata.ToArray());
         }
 
         private void ra_Led3_Clicked(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Led 3 Clicked");
+            List<byte> sendata = new List<byte>();
+            sendata.Add(Convert.ToByte(!ledstates[2]));
+            setLedStates();
+            createPacket('l', 3, sendata.ToArray());
         }
 
         private void ra_Led4_Clicked(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("Led 4 Clicked");
+            List<byte> sendata = new List<byte>();
+            sendata.Add(Convert.ToByte(!ledstates[3]));
+            setLedStates();
+            createPacket('l', 4, sendata.ToArray());
         }
 
 
