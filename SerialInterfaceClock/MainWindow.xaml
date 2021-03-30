@@ -12,7 +12,7 @@
             <RowDefinition Height="42"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1" ShowGridLines="True">
@@ -20,7 +20,7 @@
                 <RowDefinition Height="7*"/>
                 <RowDefinition Height="4*"/>
             </Grid.RowDefinitions>
-            <ListBox x:Name="Lb_Send" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White"/>
+            <TextBox x:Name="Lb_Send" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
 
             <Grid ShowGridLines="True">
                 <Grid.ColumnDefinitions>
@@ -84,7 +84,7 @@
                 <Button x:Name="Bt_Connect" Content="Connect" Margin="10,0,10,0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="22" Width="Auto" Click="Bt_Connect_Click" Background="#FF646464" Foreground="White"/>
                 <ComboBox x:Name="CbSerialPort" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="Auto"/>
             </Grid>
-            <ListBox x:Name="Lb_Recieved" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White"/>
+            <TextBox x:Name="Lb_Recieved" Grid.Row="1" Margin="10,10,10,10" Background="#FF1D1D1D" Foreground="White" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
         </Grid>
         <Grid Grid.Row="1" ShowGridLines="True">
             <Grid.ColumnDefinitions>
