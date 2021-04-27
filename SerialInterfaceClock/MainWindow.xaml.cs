@@ -128,19 +128,21 @@ namespace SerialInterfaceClock
             //int nBytes = serialPort.Read(dataRecieved, 0, dataLength);
             //if (nBytes == 0) return;
 
-
+            string time = "";
             string message = serialPort.ReadLine();
             Debug.WriteLine($"{message}");
 
             string[] subs = message.Split(",");
             byte[] bytesubs = new byte[10];
 
+            byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
+
             for (int i = 1; i < subs.Length; i++)
             {
-                bytesubs[i] = Convert.ToByte(subs[i]);
+                bytesubs[i-1] = Convert.ToByte(subs[i]);
             }
 
-            if (bytesubs[0] == 0x6c)
+            if (command == 'l')
             {
 
                 ledstates[0] = BitConverter.ToBoolean(bytesubs, 1);
@@ -150,12 +152,23 @@ namespace SerialInterfaceClock
                 setLedStates();
             }
 
+            if (command == 't')
+            {
+                time = bytesubs[2] + ":" + bytesubs[1] + ":" + bytesubs[0];
+                
+            }
+
 
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 //Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
                 //Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
+
+                if (tb_time.Text != time)
+                {
+                    tb_time.Text = time;
+                }
 
                 
                 Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} --> {message}\n");
