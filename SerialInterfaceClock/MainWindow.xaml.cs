@@ -66,13 +66,28 @@ namespace SerialInterfaceClock
             {
                 btnstate = 1;
                 btn1.Background = Brushes.Green;
-                setLedStates();
+                if (serialPort.IsOpen)
+                {
+                    serialPort.WriteLine("l,0,1,1,0");
+                }
+                else
+                {
+                    PrintError("Port is closed!");
+                }
+
             }
             else
             {
                 btnstate = 0;
                 btn1.Background = Brushes.Red;
-                setLedStates();
+                if (serialPort.IsOpen)
+                {
+                    serialPort.WriteLine("l,1,0,0,1");
+                }
+                else
+                {
+                    PrintError("Port is closed!");
+                }
 
             }
         }
@@ -130,33 +145,50 @@ namespace SerialInterfaceClock
 
             string time = "";
             string message = serialPort.ReadLine();
-            Debug.WriteLine($"{message}");
+           
+            Debug.WriteLine($"<== {message}");
 
             string[] subs = message.Split(",");
             byte[] bytesubs = new byte[10];
 
-            byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
-
-            for (int i = 1; i < subs.Length; i++)
+            if (subs.Length > 0)
             {
-                bytesubs[i-1] = Convert.ToByte(subs[i]);
-            }
+                byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
 
-            if (command == 'l')
-            {
+                for (int i = 1; i < subs.Length; i++)
+                {
 
-                ledstates[0] = BitConverter.ToBoolean(bytesubs, 1);
-                ledstates[1] = BitConverter.ToBoolean(bytesubs, 2);
-                ledstates[2] = BitConverter.ToBoolean(bytesubs, 3);
-                ledstates[3] = BitConverter.ToBoolean(bytesubs, 4);
-                setLedStates();
-            }
+                    try
+                    {
+                        bytesubs[i-1] = Convert.ToByte(subs[i]);
+                    }
+                    catch (System.FormatException)
+                    {
+                        Debug.WriteLine($"FormatException with message: {message}");
+                        MessageBox.Show("FormatException with message: "+message, "FormatException", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
 
-            if (command == 't')
-            {
-                time = bytesubs[2] + ":" + bytesubs[1] + ":" + bytesubs[0];
+
+                }
+
+                if (command == 'l')
+                {
+
+                    ledstates[0] = BitConverter.ToBoolean(bytesubs, 0);
+                    ledstates[1] = BitConverter.ToBoolean(bytesubs, 1);
+                    ledstates[2] = BitConverter.ToBoolean(bytesubs, 2);
+                    ledstates[3] = BitConverter.ToBoolean(bytesubs, 3);
+                    setLedStates();
+                }
+
+                if (command == 't')
+                {
+                    time = bytesubs[2] + ":" + bytesubs[1] + ":" + bytesubs[0];
                 
+                }
             }
+
+            
 
 
 
@@ -171,7 +203,7 @@ namespace SerialInterfaceClock
                 }
 
                 
-                Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} --> {message}\n");
+                Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} <== {message}\n");
                 Lb_Recieved.ScrollToEnd();
             }));
 
@@ -182,24 +214,18 @@ namespace SerialInterfaceClock
 
 
         // een command wordt naar het bordje gestuurd
-        private void SerialPortDataSend(byte[] data)
+        private void SerialPortDataSend(string s)
         {
 
-            string s = "";
-
-            for (int i = 0; i < data.Length; i++)
-            {
-                s += data[i].ToString() + ",";
-            }
 
             try
             {
-                serialPort.Write(data, 0, data.Length);
+                serialPort.WriteLine(s);
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
                     Debug.WriteLine($"==> {s}");
-                    Lb_Send.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} --> {s}\n");
+                    Lb_Send.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} ==> {s}\n");
                     Lb_Send.ScrollToEnd();
                 }));
 
@@ -214,36 +240,44 @@ namespace SerialInterfaceClock
 
         private void setLedStates()
         {
-            if (ledstates[0])
-                led_1.Fill = Brushes.Green;
-            else
-                led_1.Fill = Brushes.Red;
-            if (ledstates[1])
-                led_2.Fill = Brushes.Green;
-            else
-                led_2.Fill = Brushes.Red;
-            if (ledstates[2])
-                led_3.Fill = Brushes.Green;
-            else
-                led_3.Fill = Brushes.Red;
-            if (ledstates[3])
-                led_4.Fill = Brushes.Green;
-            else
-                led_4.Fill = Brushes.Red;
+
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                if (ledstates[0])
+                    led_1.Fill = Brushes.Green;
+                else
+                    led_1.Fill = Brushes.Red;
+                if (ledstates[1])
+                    led_2.Fill = Brushes.Green;
+                else
+                    led_2.Fill = Brushes.Red;
+                if (ledstates[2])
+                    led_3.Fill = Brushes.Green;
+                else
+                    led_3.Fill = Brushes.Red;
+                if (ledstates[3])
+                    led_4.Fill = Brushes.Green;
+                else
+                    led_4.Fill = Brushes.Red;
+
+            }));
+
         }
 
 
         private void PrintError(string error)
         {
-            if (error == "")
+            Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                lb_Error.Content = "";
-            }
-            else
-            {
-                lb_Error.Content = $"Error: {error}";
-            }
-
+                if (error == "")
+                {
+                    lb_Error.Content = "";
+                }
+                else
+                {
+                    lb_Error.Content = $"Error: {error}";
+                }
+            }));
         }
 
 
@@ -345,11 +379,16 @@ namespace SerialInterfaceClock
 
             List<byte> sendata = new List<byte>();
 
-            sendata.Add((byte)command);
-            sendata.Add((byte)led);
-            sendata.AddRange(data);
+            string StringData = "";
 
-            SerialPortDataSend(sendata.ToArray());
+            for(int i = 0; i < data.Length; i++)
+            {
+                StringData += data[i] + ",";
+            }
+
+            string message = command + "," + led + "," + StringData;
+
+            SerialPortDataSend(message);
         }
 
 

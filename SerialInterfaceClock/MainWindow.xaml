@@ -97,9 +97,9 @@
                 <ComboBoxItem Content="2400"></ComboBoxItem>
                 <ComboBoxItem Content="4800"></ComboBoxItem>
                 <ComboBoxItem Content="9600"></ComboBoxItem>
-                <ComboBoxItem Content="19200" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="19200"></ComboBoxItem>
                 <ComboBoxItem Content="38400"></ComboBoxItem>
-                <ComboBoxItem Content="57600"></ComboBoxItem>
+                <ComboBoxItem Content="57600" IsSelected="True"></ComboBoxItem>
                 <ComboBoxItem Content="74880"></ComboBoxItem>
                 <ComboBoxItem Content="115200"></ComboBoxItem>
             </ComboBox>
