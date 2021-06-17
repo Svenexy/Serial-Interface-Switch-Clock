@@ -68,7 +68,7 @@ namespace SerialInterfaceClock
                 btn1.Background = Brushes.Green;
                 if (serialPort.IsOpen)
                 {
-                    serialPort.WriteLine("l,0,1,1,0");
+                    serialPort.WriteLine("l,0,1,1,0\n");
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace SerialInterfaceClock
                 btn1.Background = Brushes.Red;
                 if (serialPort.IsOpen)
                 {
-                    serialPort.WriteLine("l,1,0,0,1");
+                    serialPort.WriteLine("l,1,0,0,1\n");
                 }
                 else
                 {
@@ -220,7 +220,7 @@ namespace SerialInterfaceClock
 
             try
             {
-                serialPort.WriteLine(s);
+                //serialPort.WriteLine(s);
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
