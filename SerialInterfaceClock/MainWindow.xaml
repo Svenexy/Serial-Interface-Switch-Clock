@@ -35,9 +35,12 @@
                 <Rectangle Name="led_2" MouseDown="ra_Led2_Clicked" HorizontalAlignment="Left" Width="25" Margin="50,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
                 <Rectangle Name="led_3" MouseDown="ra_Led3_Clicked" HorizontalAlignment="Left" Width="25" Margin="90,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
                 <Rectangle Name="led_4" MouseDown="ra_Led4_Clicked" HorizontalAlignment="Left" Width="25" Margin="130,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
-                <TextBox x:Name="tb_time" Margin="80,50,10,0" Text="20:25:34" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070"/>
-                <Label Content="Set time" HorizontalAlignment="Left" Margin="0,45,0,0" VerticalAlignment="Top" Foreground="White" Width="75"/>
-
+                <TextBox x:Name="tb_time" Margin="90,84,10,0" Text="20:25:34" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Height="18"/>
+                <Label Content="Set time:" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Foreground="White" Width="75"/>
+                <Button x:Name="Bt_Save_Time" Content="Save Time" Margin="10,113,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Save_Time_Click"/>
+                <TextBox x:Name="tb_time_Copy" Margin="90,148,10,0" Text="21-06-2020" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Height="18"/>
+                <Label Content="Set date:" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Foreground="White" Width="75"/>
+                <Button x:Name="Bt_Save_Date" Content="Save Date" Margin="10,175,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Save_Date_Click"/>
                 <Grid Grid.Column="1" ShowGridLines="True">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
@@ -65,9 +68,13 @@
                         <ComboBoxItem Content="True"/>
                         <ComboBoxItem Content="False"/>
                     </ComboBox>
-                    <Button x:Name="Bt_Save_Switch" Content="Opslaan" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" Grid.Row="1" HorizontalAlignment="Right" Click="Bt_Save_Switch_Click"/>
-                    <Button x:Name="Bt_Save_Interval" Content="Opslaan" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" HorizontalAlignment="Right" Click="Bt_Save_Interval_Click"/>
+                    <Button x:Name="Bt_Save_Switch" Content="Save" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" Grid.Row="1" HorizontalAlignment="Right" Click="Bt_Save_Switch_Click"/>
+                    <Button x:Name="Bt_Save_Interval" Content="Save" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" HorizontalAlignment="Right" Click="Bt_Save_Interval_Click"/>
                 </Grid>
+                <Button x:Name="Bt_Get_Time_Date" Content="Get Date &amp; Time" Margin="10,12,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Get_Time_Date_Click"/>
+                <Button x:Name="Bt_Set_Current_Time_Date" Content="Set Current Time &amp; Date" Margin="10,46,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Set_Current_Time_Date_Click"/>
+
+
             </Grid>
 
         </Grid>

@@ -391,7 +391,25 @@ namespace SerialInterfaceClock
             SerialPortDataSend(message);
         }
 
+        private void Bt_Save_Time_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
+
+        private void Bt_Save_Date_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Bt_Set_Current_Time_Date_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Bt_Get_Time_Date_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 
