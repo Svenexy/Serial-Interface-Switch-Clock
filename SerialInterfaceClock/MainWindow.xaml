@@ -28,9 +28,8 @@
                     <ColumnDefinition Width="7*"/>
                     <ColumnDefinition Width="150px"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btn1" Content="Button" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,20,26" Click="Button_Click" Background="#FF646464" Foreground="White" Width="89" Visibility="Visible" Height="51" VerticalAlignment="Bottom"/>
                 <Label Grid.Row="0" x:Name="Lb_Time" Content="20:25:34" Margin="0,10,10,0" VerticalAlignment="Top" FontStyle="Normal" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right" Width="130" Grid.Column="2"/>
-                <Label Grid.Row="0" x:Name="Lb_Date" Content="17-12-2020" Margin="0,50,10,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right" Width="130" Height="36" VerticalAlignment="Top" Grid.Column="2"/>
+                <Label Grid.Row="0" x:Name="Lb_Date" Content="17-12-20" Margin="0,50,10,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right" Width="130" Height="36" VerticalAlignment="Top" Grid.Column="2"/>
                 <Rectangle Name="led_1" MouseDown="ra_Led1_Clicked" HorizontalAlignment="Left" Width="25" Margin="10,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
                 <Rectangle Name="led_2" MouseDown="ra_Led2_Clicked" HorizontalAlignment="Left" Width="25" Margin="50,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
                 <Rectangle Name="led_3" MouseDown="ra_Led3_Clicked" HorizontalAlignment="Left" Width="25" Margin="90,0,0,10" Stroke="#FF252525" Fill="Green" Height="25" VerticalAlignment="Bottom"/>
@@ -47,7 +46,7 @@
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
-                    <Label Content="LED:" HorizontalAlignment="Left" Margin="10,0,0,10" Foreground="White" VerticalAlignment="Bottom" Height="25" Width="35"/>
+                    <!--<Label Content="LED:" HorizontalAlignment="Left" Margin="10,0,0,10" Foreground="White" VerticalAlignment="Bottom" Height="25" Width="35"/>
                     <TextBox x:Name="tb_on_time" Margin="124,0,0,12" Text="10000" TextWrapping="Wrap" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" HorizontalAlignment="Left" Width="80" VerticalAlignment="Bottom"/>
                     <TextBox x:Name="tb_off_time" Margin="247,0,0,12" Text="10000" TextWrapping="Wrap" VerticalAlignment="Bottom" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" HorizontalAlignment="Left" Width="81"/>
                     <ComboBox SelectedIndex="0" x:Name="cb_Led_Interval" HorizontalAlignment="Left" Margin="50,0,0,10" Width="50" Background="#FF707070" Foreground="Black" BorderBrush="#FF707070" VerticalAlignment="Bottom" Height="22">
@@ -55,7 +54,7 @@
                         <ComboBoxItem Content="2"/>
                         <ComboBoxItem Content="3"/>
                         <ComboBoxItem Content="4"/>
-                    </ComboBox>
+                    </ComboBox>-->
                     <Label Content="LED:" HorizontalAlignment="Left" Margin="10,0,0,10" Foreground="White" Width="35" VerticalAlignment="Bottom" Grid.Row="1" Height="25"/>
                     <TextBox x:Name="tb_Switch_Time" Margin="124,0,0,12" Text="18:00:00:000" TextWrapping="Wrap" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Grid.Row="1" VerticalAlignment="Bottom" Width="80" HorizontalAlignment="Left"/>
                     <ComboBox SelectedIndex="0" SelectedValuePath="Tag" x:Name="cb_Led_Switch" HorizontalAlignment="Left" Margin="50,0,0,10" Width="48" Background="#FF707070" Foreground="Black" BorderBrush="#FF707070" Height="22" VerticalAlignment="Bottom" Grid.Row="1">
@@ -69,12 +68,12 @@
                         <ComboBoxItem Content="False"/>
                     </ComboBox>
                     <Button x:Name="Bt_Save_Switch" Content="Save" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" Grid.Row="1" HorizontalAlignment="Right" Click="Bt_Save_Switch_Click"/>
-                    <Button x:Name="Bt_Save_Interval" Content="Save" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" HorizontalAlignment="Right" Click="Bt_Save_Interval_Click"/>
+                    <!--<Button x:Name="Bt_Save_Interval" Content="Save" Margin="0,10,10,0" VerticalAlignment="Top" Height="22" Width="90" Background="#FF646464" Foreground="White" HorizontalAlignment="Right" Click="Bt_Save_Interval_Click"/>-->
                 </Grid>
                 <Button x:Name="Bt_Get_Time_Date" Content="Get Date &amp; Time" Margin="10,12,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Get_Time_Date_Click"/>
                 <Button x:Name="Bt_Set_Current_Time_Date" Content="Set Current Time &amp; Date" Margin="10,46,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Set_Current_Time_Date_Click"/>
-                <Label Grid.Row="0" x:Name="Lb_EC_Time" Content="20:25:34:000" Margin="0,117,0,0" VerticalAlignment="Top" FontStyle="Normal" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Grid.Column="2"/>
-                <Label Grid.Row="0" x:Name="Lb_EC_Date" Content="17-12-2020" Margin="0,157,0,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Height="36" VerticalAlignment="Top" Grid.Column="2"/>
+                <Label Grid.Row="0" x:Name="Lb_EC_Time" Content="20:25:34" Margin="0,117,0,0" VerticalAlignment="Top" FontStyle="Normal" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Grid.Column="2"/>
+                <Label Grid.Row="0" x:Name="Lb_EC_Date" Content="17-12-20" Margin="0,157,0,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Height="36" VerticalAlignment="Top" Grid.Column="2"/>
 
 
             </Grid>

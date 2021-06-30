@@ -60,40 +60,6 @@ namespace SerialInterfaceClock
 
         }
 
-        // Test button
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (btnstate == 0)
-            {
-                btnstate = 1;
-                btn1.Background = Brushes.Green;
-                if (serialPort.IsOpen)
-                {
-                    serialPort.WriteLine("l,0,1,1,0\n");
-                }
-                else
-                {
-                    PrintError("Port is closed!");
-                }
-
-            }
-            else
-            {
-                btnstate = 0;
-                btn1.Background = Brushes.Red;
-                if (serialPort.IsOpen)
-                {
-                    serialPort.WriteLine("l,1,0,0,1\n");
-                }
-                else
-                {
-                    PrintError("Port is closed!");
-                }
-
-            }
-        }
-
-
         // Wanneer de Connect button is geklikt dan wordt er verbinding gemaakt met de geselecteerde poort
         private void Bt_Connect_Click(object sender, RoutedEventArgs e)
         {
@@ -150,6 +116,81 @@ namespace SerialInterfaceClock
             try
             {
                 message = serialPort.ReadLine();
+                if (message != "")
+                {
+                    string[] subs = message.Split(",");
+                    byte[] bytesubs = new byte[10];
+
+                    string time = "";
+                    string date = "";
+
+                    if (subs.Length > 0)
+                    {
+                        byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
+
+                        if (command == 'l')
+                        {
+                            byte leds = byte.Parse(subs[1]);
+
+                            ledstates[0] = (byte)(leds & 0x01);
+                            ledstates[1] = (byte)((leds & 0x02) >> 1);
+                            ledstates[2] = (byte)((leds & 0x04) >> 2);
+                            ledstates[3] = (byte)((leds & 0x08) >> 3);
+                            setLedStates();
+                        }
+
+                        if (command == 't')
+                        {
+                            int ec_time = Int32.Parse(subs[1]);
+
+                            int mili = ec_time & 0x3F;
+                            int sec = (ec_time & 0x3F000) >> 12;
+                            int min = (ec_time & 0xFC0000) >> 18;
+                            int hour = ec_time >> 24;
+
+                            time = String.Format("{0:00}:{1:00}:{2:00}", hour, min, sec);
+
+                        }
+
+                        if (command == 'd')
+                        {
+                            int ec_date = Int32.Parse(subs[1]);
+
+                            int day = ec_date & 0x3F;
+                            int month = (ec_date & 0x3C0) >> 6;
+                            int year = (ec_date & 0x3FC00) >> 10;
+
+                            date = String.Format("{0:00}-{1:00}-{2:00}", day, month, year);
+
+                        }
+                    }
+
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        //Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
+                        //Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
+
+                        if ((time != "") && (Lb_EC_Time.Content != time))
+                        {
+                            Lb_EC_Time.Content = time;
+                        }
+
+                        if ((date != "") && (Lb_EC_Date.Content != date))
+                        {
+                            Lb_EC_Date.Content = date;
+                        }
+
+
+                        Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} <== {message}\n");
+
+                        while (Lb_Recieved.LineCount > 450)
+                        {
+                            Lb_Recieved.Text = Lb_Recieved.Text.Remove(0, Lb_Recieved.GetLineLength(0));
+                        }
+
+                        Lb_Recieved.ScrollToEnd();
+                    }));
+                }
             }
 
             catch (Exception error)
@@ -157,96 +198,7 @@ namespace SerialInterfaceClock
                 MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-
-            //Debug.WriteLine($"<== {message}");
-            if (message != "")
-            {
-                string[] subs = message.Split(",");
-                byte[] bytesubs = new byte[10];
-
-                string time = "";
-                string date = "";
-
-                if (subs.Length > 0)
-                {
-                    byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
-
-                    //for (int i = 1; i < subs.Length; i++)
-                    //{
-                    //    try
-                    //    {
-                    //        bytesubs[i-1] = Convert.ToByte(subs[i]);
-                    //    }
-                    //    catch (System.FormatException)
-                    //    {
-                    //        Debug.WriteLine($"FormatException with message: {message}");
-                    //        MessageBox.Show("FormatException with message: "+message, "FormatException", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    //    }
-                    //}
-
-                    if (command == 'l')
-                    {
-                        byte leds = byte.Parse(subs[1]);
-
-                        ledstates[0] = (byte)(leds & 0x01);
-                        ledstates[1] = (byte)((leds & 0x02) >> 1);
-                        ledstates[2] = (byte)((leds & 0x04) >> 2);
-                        ledstates[3] = (byte)((leds & 0x08) >> 3);
-                        setLedStates();
-                    }
-
-                    if (command == 't')
-                    {
-                        int ec_time = Int32.Parse(subs[1]);
-
-                        int mili = ec_time & 0x3F;
-                        int sec = (ec_time & 0x3F000) >> 12;
-                        int min = (ec_time & 0xFC0000) >> 18;
-                        int hour = ec_time >> 24;
-
-                        time = String.Format("{0:00}:{1:00}:{2:00}", hour, min, sec);
-
-                    }
-
-                    if (command == 'd')
-                    {
-                        int ec_date = Int32.Parse(subs[1]);
-
-                        int day = ec_date & 0x3F;
-                        int month = (ec_date & 0x3C0) >> 6;
-                        int year = (ec_date & 0x3FC00) >> 10;
-
-                        date = String.Format("{0:00}-{1:00}-20{2:00}", day, month, year);
-
-                    }
-                }
-
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    //Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
-                    //Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
-
-                    if ((time != "") && (Lb_EC_Time.Content != time))
-                    {
-                        Lb_EC_Time.Content = time;
-                    }
-
-                    if ((date != "") && (Lb_EC_Date.Content != date))
-                    {
-                        Lb_EC_Date.Content = date;
-                    }
-
-
-                    Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} <== {message}\n");
-
-                    while (Lb_Recieved.LineCount > 450)
-                    {
-                        Lb_Recieved.Text = Lb_Recieved.Text.Remove(0, Lb_Recieved.GetLineLength(0));
-                    }
-
-                    Lb_Recieved.ScrollToEnd();
-                }));
-            }
+            
             
 
 
@@ -344,7 +296,7 @@ namespace SerialInterfaceClock
         {
             //throw new NotImplementedException();
             Lb_Time.Content = DateTime.Now.ToString("HH:mm:ss");
-            Lb_Date.Content = DateTime.Now.ToString("dd-MM-yyyy");
+            Lb_Date.Content = DateTime.Now.ToString("dd-MM-yy");
         }
 
         private void Bt_Save_Switch_Click(object sender, RoutedEventArgs e)
@@ -381,23 +333,23 @@ namespace SerialInterfaceClock
         }
 
 
-        private void Bt_Save_Interval_Click(object sender, RoutedEventArgs e)
-        {
-            int led = int.Parse(cb_Led_Interval.Text);
-            int time1 = int.Parse(tb_on_time.Text);
-            int time2 = int.Parse(tb_off_time.Text);
+        //private void Bt_Save_Interval_Click(object sender, RoutedEventArgs e)
+        //{
+        //    int led = int.Parse(cb_Led_Interval.Text);
+        //    int time1 = int.Parse(tb_on_time.Text);
+        //    int time2 = int.Parse(tb_off_time.Text);
 
-            List<byte> sendata = new List<byte>();
+        //    List<byte> sendata = new List<byte>();
 
-            sendata.Add((byte)(time1 & 0x00FF));
-            sendata.Add((byte)((time1 & 0xFF00) >> 8));
-            sendata.Add((byte)(time2 & 0x00FF));
-            sendata.Add((byte)((time2 & 0xFF00) >> 8));
+        //    sendata.Add((byte)(time1 & 0x00FF));
+        //    sendata.Add((byte)((time1 & 0xFF00) >> 8));
+        //    sendata.Add((byte)(time2 & 0x00FF));
+        //    sendata.Add((byte)((time2 & 0xFF00) >> 8));
 
-            //createPacket('i', led, sendata.ToArray());
+        //    //createPacket('i', led, sendata.ToArray());
 
 
-        }
+        //}
 
         private void ra_Led1_Clicked(object sender, MouseButtonEventArgs e)
         {
@@ -467,8 +419,12 @@ namespace SerialInterfaceClock
 
         private void Bt_Save_Time_Click(object sender, RoutedEventArgs e)
         {
+            Save_Time();
+        }
 
 
+        private void Save_Time()
+        {
             string[] time = tb_time.Text.Split(":");
 
             Debug.WriteLine(time[0][0]);
@@ -492,6 +448,11 @@ namespace SerialInterfaceClock
 
         private void Bt_Save_Date_Click(object sender, RoutedEventArgs e)
         {
+            Save_Date();
+        }
+
+        private void Save_Date()
+        {
             string[] date = tb_date.Text.Split("-");
 
 
@@ -514,6 +475,12 @@ namespace SerialInterfaceClock
 
         private void Bt_Set_Current_Time_Date_Click(object sender, RoutedEventArgs e)
         {
+            tb_time.Text = DateTime.Now.ToString("HH:mm:ss");
+            tb_date.Text = DateTime.Now.ToString("dd-MM-yy");
+
+            Save_Time();
+            System.Threading.Thread.Sleep(1000);
+            Save_Date();
 
         }
 
