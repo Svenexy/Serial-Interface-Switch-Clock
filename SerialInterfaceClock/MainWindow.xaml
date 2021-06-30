@@ -38,7 +38,7 @@
                 <TextBox x:Name="tb_time" Margin="90,84,10,0" Text="20:25:34" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Height="18"/>
                 <Label Content="Set time:" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Foreground="White" Width="75"/>
                 <Button x:Name="Bt_Save_Time" Content="Save Time" Margin="10,113,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Save_Time_Click"/>
-                <TextBox x:Name="tb_time_Copy" Margin="90,148,10,0" Text="21-06-2020" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Height="18"/>
+                <TextBox x:Name="tb_date" Margin="90,148,10,0" Text="01-07-21" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Height="18"/>
                 <Label Content="Set date:" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Foreground="White" Width="75"/>
                 <Button x:Name="Bt_Save_Date" Content="Save Date" Margin="10,175,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Save_Date_Click"/>
                 <Grid Grid.Column="1" ShowGridLines="True">
@@ -57,7 +57,7 @@
                         <ComboBoxItem Content="4"/>
                     </ComboBox>
                     <Label Content="LED:" HorizontalAlignment="Left" Margin="10,0,0,10" Foreground="White" Width="35" VerticalAlignment="Bottom" Grid.Row="1" Height="25"/>
-                    <TextBox x:Name="tb_Switch_Time" Margin="124,0,0,12" Text="18:00:00" TextWrapping="Wrap" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Grid.Row="1" VerticalAlignment="Bottom" Width="80" HorizontalAlignment="Left"/>
+                    <TextBox x:Name="tb_Switch_Time" Margin="124,0,0,12" Text="18:00:00:000" TextWrapping="Wrap" Background="#FF646464" Foreground="White" BorderBrush="#FF707070" Grid.Row="1" VerticalAlignment="Bottom" Width="80" HorizontalAlignment="Left"/>
                     <ComboBox SelectedIndex="0" SelectedValuePath="Tag" x:Name="cb_Led_Switch" HorizontalAlignment="Left" Margin="50,0,0,10" Width="48" Background="#FF707070" Foreground="Black" BorderBrush="#FF707070" Height="22" VerticalAlignment="Bottom" Grid.Row="1">
                         <ComboBoxItem Content="1"/>
                         <ComboBoxItem Content="2"/>
@@ -73,6 +73,8 @@
                 </Grid>
                 <Button x:Name="Bt_Get_Time_Date" Content="Get Date &amp; Time" Margin="10,12,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Get_Time_Date_Click"/>
                 <Button x:Name="Bt_Set_Current_Time_Date" Content="Set Current Time &amp; Date" Margin="10,46,10,0" VerticalAlignment="Top" Height="22" Background="#FF646464" Foreground="White" Click="Bt_Set_Current_Time_Date_Click"/>
+                <Label Grid.Row="0" x:Name="Lb_EC_Time" Content="20:25:34:000" Margin="0,117,0,0" VerticalAlignment="Top" FontStyle="Normal" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Grid.Column="2"/>
+                <Label Grid.Row="0" x:Name="Lb_EC_Date" Content="17-12-2020" Margin="0,157,0,0" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Width="130" Height="36" VerticalAlignment="Top" Grid.Column="2"/>
 
 
             </Grid>
@@ -103,10 +105,10 @@
                 <ComboBoxItem Content="1200"></ComboBoxItem>
                 <ComboBoxItem Content="2400"></ComboBoxItem>
                 <ComboBoxItem Content="4800"></ComboBoxItem>
-                <ComboBoxItem Content="9600"></ComboBoxItem>
+                <ComboBoxItem Content="9600" IsSelected="True"></ComboBoxItem>
                 <ComboBoxItem Content="19200"></ComboBoxItem>
                 <ComboBoxItem Content="38400"></ComboBoxItem>
-                <ComboBoxItem Content="57600" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="57600"></ComboBoxItem>
                 <ComboBoxItem Content="74880"></ComboBoxItem>
                 <ComboBoxItem Content="115200"></ComboBoxItem>
             </ComboBox>

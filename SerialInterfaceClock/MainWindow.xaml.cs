@@ -23,6 +23,7 @@ namespace SerialInterfaceClock
     static class Constants
     {
         public const double Pi = 3.14159;
+        public const byte ASCII = 48;
     }
 
 
@@ -39,7 +40,7 @@ namespace SerialInterfaceClock
 
         private byte btnstate = 0;
 
-        private bool[] ledstates = { false, false, false, false };
+        private byte[] ledstates = { 0, 0, 0, 0};
 
 
         public MainWindow()
@@ -143,69 +144,110 @@ namespace SerialInterfaceClock
             //int nBytes = serialPort.Read(dataRecieved, 0, dataLength);
             //if (nBytes == 0) return;
 
-            string time = "";
-            string message = serialPort.ReadLine();
-           
-            Debug.WriteLine($"<== {message}");
-
-            string[] subs = message.Split(",");
-            byte[] bytesubs = new byte[10];
-
-            if (subs.Length > 0)
+            
+            string message = "";
+            
+            try
             {
-                byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
-
-                for (int i = 1; i < subs.Length; i++)
-                {
-
-                    try
-                    {
-                        bytesubs[i-1] = Convert.ToByte(subs[i]);
-                    }
-                    catch (System.FormatException)
-                    {
-                        Debug.WriteLine($"FormatException with message: {message}");
-                        MessageBox.Show("FormatException with message: "+message, "FormatException", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-
-
-                }
-
-                if (command == 'l')
-                {
-
-                    ledstates[0] = BitConverter.ToBoolean(bytesubs, 0);
-                    ledstates[1] = BitConverter.ToBoolean(bytesubs, 1);
-                    ledstates[2] = BitConverter.ToBoolean(bytesubs, 2);
-                    ledstates[3] = BitConverter.ToBoolean(bytesubs, 3);
-                    setLedStates();
-                }
-
-                if (command == 't')
-                {
-                    time = bytesubs[2] + ":" + bytesubs[1] + ":" + bytesubs[0];
-                
-                }
+                message = serialPort.ReadLine();
             }
 
-            
-
-
-
-            Application.Current.Dispatcher.Invoke(new Action(() =>
+            catch (Exception error)
             {
-                //Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
-                //Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
-                if (tb_time.Text != time)
+
+            //Debug.WriteLine($"<== {message}");
+            if (message != "")
+            {
+                string[] subs = message.Split(",");
+                byte[] bytesubs = new byte[10];
+
+                string time = "";
+                string date = "";
+
+                if (subs.Length > 0)
                 {
-                    tb_time.Text = time;
+                    byte command = ASCIIEncoding.ASCII.GetBytes(subs[0])[0];
+
+                    //for (int i = 1; i < subs.Length; i++)
+                    //{
+                    //    try
+                    //    {
+                    //        bytesubs[i-1] = Convert.ToByte(subs[i]);
+                    //    }
+                    //    catch (System.FormatException)
+                    //    {
+                    //        Debug.WriteLine($"FormatException with message: {message}");
+                    //        MessageBox.Show("FormatException with message: "+message, "FormatException", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    //    }
+                    //}
+
+                    if (command == 'l')
+                    {
+                        byte leds = byte.Parse(subs[1]);
+
+                        ledstates[0] = (byte)(leds & 0x01);
+                        ledstates[1] = (byte)((leds & 0x02) >> 1);
+                        ledstates[2] = (byte)((leds & 0x04) >> 2);
+                        ledstates[3] = (byte)((leds & 0x08) >> 3);
+                        setLedStates();
+                    }
+
+                    if (command == 't')
+                    {
+                        int ec_time = Int32.Parse(subs[1]);
+
+                        int mili = ec_time & 0x3F;
+                        int sec = (ec_time & 0x3F000) >> 12;
+                        int min = (ec_time & 0xFC0000) >> 18;
+                        int hour = ec_time >> 24;
+
+                        time = String.Format("{0:00}:{1:00}:{2:00}", hour, min, sec);
+
+                    }
+
+                    if (command == 'd')
+                    {
+                        int ec_date = Int32.Parse(subs[1]);
+
+                        int day = ec_date & 0x3F;
+                        int month = (ec_date & 0x3C0) >> 6;
+                        int year = (ec_date & 0x3FC00) >> 10;
+
+                        date = String.Format("{0:00}-{1:00}-20{2:00}", day, month, year);
+
+                    }
                 }
 
-                
-                Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} <== {message}\n");
-                Lb_Recieved.ScrollToEnd();
-            }));
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    //Debug.WriteLine($"{Encoding.Default.GetString(dataRecieved)}");
+                    //Lb_Recieved.Items.Add($"{Encoding.Default.GetString(dataRecieved)}");
+
+                    if ((time != "") && (Lb_EC_Time.Content != time))
+                    {
+                        Lb_EC_Time.Content = time;
+                    }
+
+                    if ((date != "") && (Lb_EC_Date.Content != date))
+                    {
+                        Lb_EC_Date.Content = date;
+                    }
+
+
+                    Lb_Recieved.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} <== {message}\n");
+
+                    while (Lb_Recieved.LineCount > 450)
+                    {
+                        Lb_Recieved.Text = Lb_Recieved.Text.Remove(0, Lb_Recieved.GetLineLength(0));
+                    }
+
+                    Lb_Recieved.ScrollToEnd();
+                }));
+            }
+            
 
 
 
@@ -214,17 +256,21 @@ namespace SerialInterfaceClock
 
 
         // een command wordt naar het bordje gestuurd
-        private void SerialPortDataSend(string s)
+        private void SerialPortDataSend(byte[] buffer)
         {
-
-
+            string s = "";
+            
             try
             {
-                //serialPort.WriteLine(s);
+                serialPort.Write(buffer, 0, buffer.Length);
+
+                foreach (var item in buffer)
+                {
+                    s += (char)item;
+                }
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    Debug.WriteLine($"==> {s}");
                     Lb_Send.AppendText($"{DateTime.Now.ToString("HH:mm:ss:fff")} ==> {s}\n");
                     Lb_Send.ScrollToEnd();
                 }));
@@ -243,19 +289,19 @@ namespace SerialInterfaceClock
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                if (ledstates[0])
+                if (ledstates[0] == 1)
                     led_1.Fill = Brushes.Green;
                 else
                     led_1.Fill = Brushes.Red;
-                if (ledstates[1])
+                if (ledstates[1] == 1)
                     led_2.Fill = Brushes.Green;
                 else
                     led_2.Fill = Brushes.Red;
-                if (ledstates[2])
+                if (ledstates[2] == 1)
                     led_3.Fill = Brushes.Green;
                 else
                     led_3.Fill = Brushes.Red;
-                if (ledstates[3])
+                if (ledstates[3] == 1)
                     led_4.Fill = Brushes.Green;
                 else
                     led_4.Fill = Brushes.Red;
@@ -288,7 +334,7 @@ namespace SerialInterfaceClock
         private void startclock()
         {
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += tickevent;
             timer.Start();
 
@@ -303,21 +349,34 @@ namespace SerialInterfaceClock
 
         private void Bt_Save_Switch_Click(object sender, RoutedEventArgs e)
         {
-            int led = int.Parse(cb_Led_Switch.Text);
-            string time = tb_Switch_Time.Text;
-            byte on_off = (byte)((bool.Parse(cb_OnOff.Text)) ? 0x01 : 0x00);
+            byte led = (byte)(byte.Parse(cb_Led_Switch.Text)+48);
+            string[] time = tb_Switch_Time.Text.Split(":");
+            byte on_off = (byte)((bool.Parse(cb_OnOff.Text)) ? '1' : '0');
 
-            List<string> timeList = new List<string>(time.Split(':'));
-            List<byte> sendata = new List<byte>();
+            byte[] hour = Encoding.ASCII.GetBytes(time[0]);
+            byte[] minute = Encoding.ASCII.GetBytes(time[1]);
+            byte[] second = Encoding.ASCII.GetBytes(time[2]);
+            byte[] mili = Encoding.ASCII.GetBytes(time[3]);
 
-            sendata.Add(on_off);
+            byte[] buffer =
+                {
+                    (byte)'h',
+                    led,
+                    on_off,
+                    hour[0],
+                    hour[1],
+                    minute[0],
+                    minute[1],
+                    second[0],
+                    second[1],
+                    mili[0],
+                    mili[1],
+                    mili[2]
+                };
 
-            foreach (string i in timeList)
-            {
-                sendata.Add(byte.Parse(i));
-            }
+            SerialPortDataSend(buffer);
 
-            createPacket('h', led, sendata.ToArray());
+
 
         }
 
@@ -335,70 +394,122 @@ namespace SerialInterfaceClock
             sendata.Add((byte)(time2 & 0x00FF));
             sendata.Add((byte)((time2 & 0xFF00) >> 8));
 
-            createPacket('i', led, sendata.ToArray());
+            //createPacket('i', led, sendata.ToArray());
 
 
         }
 
         private void ra_Led1_Clicked(object sender, MouseButtonEventArgs e)
         {
-            List<byte> sendata = new List<byte>();
-            sendata.Add(Convert.ToByte(!ledstates[0]));
+            byte on_off;
+            if (ledstates[0] == 1) on_off = 0x30;
+            else on_off = 0x31;
             setLedStates();
-            createPacket('l', 1, sendata.ToArray());
+            byte[] buffer =
+                {
+                    0x6C,
+                    0x30,
+                    on_off
+                };
+
+            SerialPortDataSend(buffer);
 
         }
 
         private void ra_Led2_Clicked(object sender, MouseButtonEventArgs e)
         {
-            List<byte> sendata = new List<byte>();
-            sendata.Add(Convert.ToByte(!ledstates[1]));
+            byte on_off;
+            if (ledstates[1] == 1) on_off = 0x30;
+            else on_off = 0x31;
             setLedStates();
-            createPacket('l', 2, sendata.ToArray());
+            byte[] buffer =
+                {
+                    0x6C,
+                    0x31,
+                    on_off
+                };
+
+            SerialPortDataSend(buffer);
         }
 
         private void ra_Led3_Clicked(object sender, MouseButtonEventArgs e)
         {
-            List<byte> sendata = new List<byte>();
-            sendata.Add(Convert.ToByte(!ledstates[2]));
+            byte on_off;
+            if (ledstates[2] == 1)  on_off = 0x30;
+            else                    on_off = 0x31;
+
             setLedStates();
-            createPacket('l', 3, sendata.ToArray());
+            byte[] buffer =
+                {
+                    0x6C,
+                    0x32,
+                    on_off
+                };
+
+            SerialPortDataSend(buffer);
         }
 
         private void ra_Led4_Clicked(object sender, MouseButtonEventArgs e)
         {
-            List<byte> sendata = new List<byte>();
-            sendata.Add(Convert.ToByte(!ledstates[3]));
+            byte on_off;
+            if (ledstates[3] == 1) on_off = 0x30;
+            else on_off = 0x31;
             setLedStates();
-            createPacket('l', 4, sendata.ToArray());
-        }
+            byte[] buffer =
+                {
+                    0x6C,
+                    0x33,
+                    on_off
+                };
 
-
-        private void createPacket(char command, int led, byte[] data)
-        {
-
-            List<byte> sendata = new List<byte>();
-
-            string StringData = "";
-
-            for(int i = 0; i < data.Length; i++)
-            {
-                StringData += data[i] + ",";
-            }
-
-            string message = command + "," + led + "," + StringData;
-
-            SerialPortDataSend(message);
+            SerialPortDataSend(buffer);
         }
 
         private void Bt_Save_Time_Click(object sender, RoutedEventArgs e)
         {
 
+
+            string[] time = tb_time.Text.Split(":");
+
+            Debug.WriteLine(time[0][0]);
+
+            byte[] hour = Encoding.ASCII.GetBytes(time[0]);
+            byte[] minute = Encoding.ASCII.GetBytes(time[1]);
+            byte[] second = Encoding.ASCII.GetBytes(time[2]);
+
+            byte[] buffer =
+                {
+                    (byte)'t',
+                    hour[0],
+                    hour[1],
+                    minute[0],
+                    minute[1],
+                    second[0],
+                    second[1]
+                };
+            SerialPortDataSend(buffer);
         }
 
         private void Bt_Save_Date_Click(object sender, RoutedEventArgs e)
         {
+            string[] date = tb_date.Text.Split("-");
 
+
+            byte[] day = Encoding.ASCII.GetBytes(date[0]);
+            byte[] month = Encoding.ASCII.GetBytes(date[1]);
+            byte[] year = Encoding.ASCII.GetBytes(date[2]);
+
+            byte[] buffer =
+                {
+                    (byte)'d',
+                    day[0],
+                    day[1],
+                    month[0],
+                    month[1],
+                    year[0],
+                    year[1]
+                };
+            SerialPortDataSend(buffer);
         }
 
         private void Bt_Set_Current_Time_Date_Click(object sender, RoutedEventArgs e)
@@ -408,7 +519,11 @@ namespace SerialInterfaceClock
 
         private void Bt_Get_Time_Date_Click(object sender, RoutedEventArgs e)
         {
-
+            byte[] buffer =
+                {
+                    (byte)'c'
+                };
+            SerialPortDataSend(buffer);
         }
     }
 
